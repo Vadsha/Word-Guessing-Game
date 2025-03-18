@@ -1,11 +1,42 @@
-# React + TypeScript + Vite
+# Word Guessing Game
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A simple and fun word guessing game built with React, TypeScript, and Vite.
 
-Currently, two official plugins are available:
+## Description
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+This Word Guessing Game is a web-based application where players attempt to guess a randomly selected five-letter word. The game provides feedback on each guess, helping players deduce the correct word.
+
+## Features
+
+- Randomly generated five-letter word for each game
+- Interactive grid to display guesses and provide feedback
+- Real-time input for guesses
+- Visual feedback on letter correctness:
+  - Green: Correct letter in the correct position
+  - Yellow: Correct letter in the wrong position
+  - Gray: Letter not in the word
+- Reset functionality to start a new game
+- Responsive design for various screen sizes
+
+## How to Play
+
+1. The game starts with a randomly selected five-letter word.
+2. Type your guess using your keyboard. The current guess is displayed at the bottom.
+3. Press Enter to submit your guess.
+4. The grid will update to show the correctness of each letter in your guess.
+5. You have five attempts to guess the word correctly.
+6. If you guess the word or use all attempts, you can reset the game to play again.
+
+## Technologies Used
+
+- React
+- TypeScript
+- Vite
+- Tailwind CSS
+
+## Setup and Installation
+
+1. Clone the repository:
 
 ## Expanding the ESLint configuration
 
