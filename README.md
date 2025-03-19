@@ -1,5 +1,5 @@
 # Word Guessing Game
-[Play here (Desktop onpy)](https://vaddshah-guessing-game.netlify.app/)) 
+[Play here (Desktop only)](https://vaddshah-guessing-game.netlify.app/)) 
 
 A simple and fun word guessing game built with React, TypeScript, and Vite.
 
