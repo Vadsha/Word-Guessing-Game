@@ -1,10 +1,12 @@
 import { letters } from "@/assets/letters";
 import { Button } from "@/components/ui/button";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
+
+const isMobile = window.innerWidth < 768;
 
 const Grid = ({
   guesses,
-  answer,
+  answer
 }: {
   guesses: Array<string | null>;
   answer: string;
@@ -39,24 +41,19 @@ const Grid = ({
 };
 
 const Home = () => {
+  const inputRef = useRef<HTMLInputElement>(null);
   const [answer, setAnswer] = useState("");
-  const [guesses, setGuesses] = useState<Array<null | string>>([
-    null,
-    null,
-    null,
-    null,
-    null,
-  ]);
+  const [guesses, setGuesses] = useState<Array<null | string>>(
+    Array(5).fill(null)
+  );
   const [currentGuess, setCurrentGuess] = useState("");
   const [hasFailed, setHasFailed] = useState(false);
 
-  useEffect(() => {
-    const letter = letters[Math.floor(Math.random() * letters.length)];
-    setAnswer(letter);
-  }, []);
-
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
+  const handleKeyDown = useCallback(
+    (e: KeyboardEvent | React.KeyboardEvent<HTMLInputElement>) => {
+      if (guesses.includes(answer)) {
+        return;
+      }
       if (guesses.filter((guess) => guess == null).length == 0) {
         setHasFailed(true);
         return;
@@ -90,26 +87,65 @@ const Home = () => {
         e.key == "Shift";
       if (isAlphabetic && !notActualLetter) {
         if (currentGuess.length == 5) {
-          console.log(currentGuess.length);
           return;
         }
         setCurrentGuess((oldGuess) => oldGuess + e.key);
       }
-    };
+    },
+    [answer, guesses, currentGuess]
+  );
 
-    document.addEventListener("keydown", handleKeyDown);
+  useEffect(() => {
+    const letter = letters[Math.floor(Math.random() * letters.length)];
+    setAnswer(letter);
+  }, []);
+
+  useEffect(() => {
+    if (inputRef.current && isMobile) {
+      inputRef.current.focus();
+    }
+  }, []);
+
+  useEffect(() => {
+    if (!isMobile) {
+      document.addEventListener("keydown", handleKeyDown);
+    }
     return () => {
       document.removeEventListener("keydown", handleKeyDown);
     };
-  }, [currentGuess, guesses]);
+  }, [handleKeyDown]);
 
   return (
     <div className="w-screen flex-col h-screen flex justify-center items-center gap-12">
       <h1 className="text-2xl font-semibold">Guess a five letter word</h1>
       <Grid answer={answer} guesses={guesses} />
+      {guesses.includes(answer) ? (
+        <div>
+          <h2 className="text-green-500 text-center text-xl mb-2">
+            YAY! You won!
+          </h2>
+          <Button
+            className="w-[180px] cursor-pointer"
+            onClick={() => {
+              setAnswer(letters[Math.floor(Math.random() * letters.length)]);
+              setGuesses([null, null, null, null, null]);
+              setCurrentGuess("");
+              setHasFailed(false);
+            }}
+          >
+            Reset
+          </Button>
+        </div>
+      ) : null}
       {hasFailed || guesses.filter((guess) => guess == null).length == 0 ? (
         <div className="flex flex-col gap-2 justify-center items-center">
-          <h2 className="text-red-500">You have failed to guess the word.</h2>
+          {guesses.includes(answer) ? (
+            <h2 className="text-green-500 text-xl mb-2">YAY! You won!</h2>
+          ) : (
+            <h2 className="text-red-500 text-xl mb-2">
+              You have failed to guess the word.
+            </h2>
+          )}
           <p>Answer - {answer}</p>
           <Button
             className="w-[180px] cursor-pointer"
@@ -124,14 +160,35 @@ const Home = () => {
           </Button>
         </div>
       ) : (
-        <div className="flex gap-4 items-center">
+        <div
+          onClick={() => inputRef.current?.focus()}
+          className="flex gap-4 items-center"
+        >
+          <input
+            ref={inputRef}
+            type="text"
+            autoComplete="off"
+            autoCorrect="off"
+            spellCheck="false"
+            className="absolute opacity-0 pointer-events-none"
+            onKeyDown={(e) => {
+              if (isMobile) {
+                handleKeyDown(e);
+              }
+            }}
+          />
           <p>Current Guess - </p>
           {[0, 1, 2, 3, 4].map((i) => (
             <p
               key={i}
+              id={`letter${i}`}
               className="w-10 h-10 border rounded-lg flex justify-center items-center"
             >
-              {currentGuess[i]}
+              {i == 0 && currentGuess.length == 0 ? (
+                <span className="animate-pulse">|</span>
+              ) : (
+                currentGuess[i]
+              )}
             </p>
           ))}
         </div>
